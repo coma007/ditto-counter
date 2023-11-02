@@ -11,6 +11,9 @@ if __name__ == "__main__":
     images = read_all_images(path)
 
     counts = read_csv("ditto_count.csv")
+    
+    actual_values = np.zeros(len(counts))
+    predicted_values = np.zeros(len(counts))
 
     i = 0
     for path in images:
@@ -18,7 +21,7 @@ if __name__ == "__main__":
 
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        lower_purple = np.array([150, 50, 200])  # Adjust these values to match the specific shade of purple you want to detect
+        lower_purple = np.array([150, 50, 50])  # Adjust these values to match the specific shade of purple you want to detect
         upper_purple = np.array([180, 255, 255])
 
         purple_mask = cv2.inRange(hsv_image, lower_purple, upper_purple)
@@ -51,6 +54,15 @@ if __name__ == "__main__":
 
         title = path.split("/")[-1]
         print(f"{title}-{counts[title]}-{number_of_dittos}")
+
+        actual_values[i] = counts[title]
+        predicted_values[i] = number_of_dittos
+
+        i += 1
+
+    absolute_differences = np.abs(predicted_values - actual_values)
+    mae = np.mean(absolute_differences)
+    print(mae)
 
     
  
