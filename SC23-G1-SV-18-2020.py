@@ -16,23 +16,26 @@ if __name__ == "__main__":
     for path in images:
         image = load_image(path)
 
-        image_blur = cv2.GaussianBlur(rgb_to_grayscale(image), (5, 5), 0)
-        image_bin =  cv2.adaptiveThreshold(image_blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        # ret, image_bin = cv2.threshold(rgb_to_grayscale(image), 0, 255, cv2.cv2.THRESH_OTSU)
-        # image_bin = 255 - image_bin
-        # image_bin = grayscale_to_bin(rgb_to_grayscale(image))
+        lower_purple = np.array([150, 50, 200])  # Adjust these values to match the specific shade of purple you want to detect
+        upper_purple = np.array([180, 255, 255])
+
+        purple_mask = cv2.inRange(hsv_image, lower_purple, upper_purple)
+        purple_extracted = cv2.bitwise_and(image, image, mask=purple_mask)
+        image = purple_extracted
+        ret, image_bin = cv2.threshold(purple_mask, 1, 255, cv2.THRESH_BINARY)
         
         kernel = np.ones((3,3), np.uint8) 
 
-        opening = cv2.morphologyEx(image_bin, cv2.MORPH_OPEN, kernel, iterations = 3) # otvaranje
-        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 3) # zatvaranje
-        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 3) # dilacija
-        erosion = cv2.morphologyEx(image_bin, cv2.MORPH_ERODE, kernel, iterations = 3) # erozija
-        sure_bg = cv2.dilate(closing, kernel, iterations=3)
-        dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, maskSize=0) #  DIST_L2 - Euklidsko rastojanje
+        opening = cv2.morphologyEx(image_bin, cv2.MORPH_OPEN, kernel, iterations = 2) # otvaranje
+        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 2) # zatvaranje
+        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 2) # dilacija
+        erosion = cv2.morphologyEx(image_bin, cv2.MORPH_ERODE, kernel, iterations = 2) # erozija
+        sure_bg = cv2.dilate(closing, kernel, iterations=1)
+        dist_transform = cv2.distanceTransform(dilation, cv2.DIST_L2, maskSize=5) #  DIST_L2 - Euklidsko rastojanje
 
-        ret, sure_fg = cv2.threshold(dist_transform, 0.65 * dist_transform.max(), 255, 0) 
+        ret, sure_fg = cv2.threshold(dist_transform, 0.3 * dist_transform.max(), 255, 0) 
         sure_fg = np.uint8(sure_fg)
         unknown = cv2.subtract(sure_bg, sure_fg)
 
