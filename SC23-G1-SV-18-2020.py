@@ -31,14 +31,15 @@ if __name__ == "__main__":
         
         kernel = np.ones((3,3), np.uint8) 
 
-        opening = cv2.morphologyEx(image_bin, cv2.MORPH_OPEN, kernel, iterations = 2) # otvaranje
-        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 2) # zatvaranje
-        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 2) # dilacija
-        erosion = cv2.morphologyEx(image_bin, cv2.MORPH_ERODE, kernel, iterations = 2) # erozija
-        sure_bg = cv2.dilate(closing, kernel, iterations=1)
-        dist_transform = cv2.distanceTransform(dilation, cv2.DIST_L2, maskSize=5) #  DIST_L2 - Euklidsko rastojanje
+        opening = cv2.morphologyEx(image_bin, cv2.MORPH_OPEN, kernel, iterations = 3) # otvaranje
+        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 3) # zatvaranje
+        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 3) # dilacija
+        erosion = cv2.morphologyEx(image_bin, cv2.MORPH_ERODE, kernel, iterations = 3) # erozija
+        
+        sure_bg = cv2.dilate(dilation, kernel, iterations=3)
+        dist_transform = cv2.distanceTransform(closing, cv2.DIST_L2, maskSize=5) #  DIST_L2 - Euklidsko rastojanje
 
-        ret, sure_fg = cv2.threshold(dist_transform, 0.3 * dist_transform.max(), 255, 0) 
+        ret, sure_fg = cv2.threshold(dist_transform, 0.6 * dist_transform.max(), 255, 0) 
         sure_fg = np.uint8(sure_fg)
         unknown = cv2.subtract(sure_bg, sure_fg)
 
