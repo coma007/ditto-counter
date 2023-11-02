@@ -21,10 +21,10 @@ if __name__ == "__main__":
 
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        lower_purple = np.array([150, 50, 50])  # Adjust these values to match the specific shade of purple you want to detect
-        upper_purple = np.array([180, 255, 255])
+        lower_purple = np.array([130, 40, 40])  # Adjust these values to match the specific shade of purple you want to detect
+        upper_purple = np.array([180, 200, 220])
 
-        purple_mask = cv2.inRange(hsv_image, lower_purple, upper_purple)
+        purple_mask = cv2.inRange(hsv_image, lower_purple, upper_purple) 
         purple_extracted = cv2.bitwise_and(image, image, mask=purple_mask)
         image = purple_extracted
         ret, image_bin = cv2.threshold(purple_mask, 1, 255, cv2.THRESH_BINARY)
@@ -32,14 +32,14 @@ if __name__ == "__main__":
         kernel = np.ones((3,3), np.uint8) 
 
         opening = cv2.morphologyEx(image_bin, cv2.MORPH_OPEN, kernel, iterations = 3) # otvaranje
-        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 3) # zatvaranje
-        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 3) # dilacija
+        closing = cv2.morphologyEx(image_bin, cv2.MORPH_CLOSE, kernel, iterations = 6) # zatvaranje
+        dilation = cv2.morphologyEx(image_bin, cv2.MORPH_DILATE, kernel, iterations = 6) # dilacija
         erosion = cv2.morphologyEx(image_bin, cv2.MORPH_ERODE, kernel, iterations = 3) # erozija
         
-        sure_bg = cv2.dilate(dilation, kernel, iterations=3)
+        sure_bg = cv2.dilate(dilation, kernel, iterations=10)
         dist_transform = cv2.distanceTransform(closing, cv2.DIST_L2, maskSize=5) #  DIST_L2 - Euklidsko rastojanje
 
-        ret, sure_fg = cv2.threshold(dist_transform, 0.6 * dist_transform.max(), 255, 0) 
+        ret, sure_fg = cv2.threshold(dist_transform, 0.55 * dist_transform.max(), 255, 0) 
         sure_fg = np.uint8(sure_fg)
         unknown = cv2.subtract(sure_bg, sure_fg)
 
