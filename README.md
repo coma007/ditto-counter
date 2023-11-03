@@ -1,7 +1,7 @@
 # ditto-counter
 Segmentation and counting Ditto's on image. (Homework for course Soft Computing) 
 
-Goal of this script is to segment and count Ditto Pokemons on image. Algorithms that will be used cover basic **image preprocessing** (conversion to HSV and binary format, applying mask to extract purple segments on image) and **Watershed algorithm** for segments counting.
+Goal of this script is to segment and count Ditto Pokemons on image. Algorithms that will be used cover basic **image preprocessing** (conversion to HSV and binary format, applying mask to extract purple segments on image) and **watershed algorithm** for segments counting.
 
 All code for image preprocessing can be found in script 'preprocessing.py'.
 
@@ -231,13 +231,7 @@ display_image(rgba_img, color=True)
 
 Before counting number of markers (unique colors on image), final step of watershed algorithm is applied. That is, marking boundaries of object with -1, taking into consideration both foreground and unknow parts of image. 
 
-
-```python
-markers = cv2.watershed(image_bin, markers)
-image_bin[markers == -1] = [255, 0, 0]
-rgba_img = label2rgb(markers)
-display_image(rgba_img, color=True)
-```
+/home/coma/Documents/ftn/predmeti/SOFT/Kolokvijumi/K1/ditto-counter/README.ipynb
 
 
     
@@ -258,5 +252,5 @@ number_of_dittos = len(unique_colors) - 2
 print("Number of detected Dittos:", number_of_dittos)
 ```
 
-    Number of detected Dittos: 8
+Number of detected Dittos: 8
 
