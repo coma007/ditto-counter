@@ -229,10 +229,7 @@ display_image(rgba_img, color=True)
     
 
 
-Before counting number of markers (unique colors on image), final step of watershed algorithm is applied. That is, marking boundaries of object with -1, taking into consideration both foreground and unknow parts of image. 
-
-/home/coma/Documents/ftn/predmeti/SOFT/Kolokvijumi/K1/ditto-counter/README.ipynb
-
+Before counting number of markers (unique colors on image), final step of watershed algorithm is applied. That is, marking boundaries of object with -1, taking into consideration both foreground and unknow part.
 
     
 ![png](README_files/README_38_0.png)
@@ -252,5 +249,5 @@ number_of_dittos = len(unique_colors) - 2
 print("Number of detected Dittos:", number_of_dittos)
 ```
 
-Number of detected Dittos: 8
+> Number of detected Dittos: 8
 
