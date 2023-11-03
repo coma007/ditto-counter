@@ -30,8 +30,8 @@ def read_all_images(path):
     return images
 
 
-def load_image(path):
-    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+def load_image_hsv(path):
+    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2HSV)
 
 
 def display_image(image, color=False):
@@ -41,12 +41,8 @@ def display_image(image, color=False):
         plt.imshow(image, 'gray')
 
 
-def convert_to_hsv(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-
 def extract_purple(hsv_image):
-    lower_purple = np.array([130, 40, 50]) 
+    lower_purple = np.array([130, 40, 60]) 
     upper_purple = np.array([180, 200, 220])
     return cv2.inRange(hsv_image, lower_purple, upper_purple) 
 
@@ -80,8 +76,8 @@ def watershed(image, sure_fg, unknown):
     markers = markers+1
     markers[unknown==255] = 0
     markers = cv2.watershed(image, markers)
-    unique_colours = {x for l in markers for x in l}
-    return len(unique_colours) - 2
+    unique_colors = {x for l in markers for x in l}
+    return len(unique_colors) - 2
 
 
 def label2rgb(markers):
@@ -93,9 +89,9 @@ def print_result(title, actual_values, predicted_values):
     print(f"{title}-{actual_values}-{predicted_values}")
 
 
-def save_result(index, actual_values_array, predicted_values_array, actual_values, predicted_values):
-    actual_values_array[index] = actual_values
-    predicted_values_array[index] = predicted_values
+def save_result(index, actual_values_array, predicted_values_array, actual_value, predicted_value):
+    actual_values_array[index] = actual_value
+    predicted_values_array[index] = predicted_value
 
 
 def calculate_mae(predicted_values, actual_values):

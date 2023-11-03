@@ -31,8 +31,8 @@ def read_all_images(path):
     return images
 
 
-def load_image(path):
-    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+def load_image_hsv(path):
+    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2HSV)
 
 
 def display_image(image, color=False):
@@ -42,12 +42,8 @@ def display_image(image, color=False):
         plt.imshow(image, 'gray')
 
 
-def convert_to_hsv(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-
 def extract_purple(hsv_image):
-    lower_purple = np.array([130, 40, 50]) 
+    lower_purple = np.array([130, 40, 60]) 
     upper_purple = np.array([180, 200, 220])
     return cv2.inRange(hsv_image, lower_purple, upper_purple) 
 
@@ -81,8 +77,8 @@ def watershed(image, sure_fg, unknown):
     markers = markers+1
     markers[unknown==255] = 0
     markers = cv2.watershed(image, markers)
-    unique_colours = {x for l in markers for x in l}
-    return len(unique_colours) - 2
+    unique_colors = {x for l in markers for x in l}
+    return len(unique_colors) - 2
 
 
 def label2rgb(markers):
@@ -94,9 +90,9 @@ def print_result(title, actual_values, predicted_values):
     print(f"{title}-{actual_values}-{predicted_values}")
 
 
-def save_result(index, actual_values_array, predicted_values_array, actual_values, predicted_values):
-    actual_values_array[index] = actual_values
-    predicted_values_array[index] = predicted_values
+def save_result(index, actual_values_array, predicted_values_array, actual_value, predicted_value):
+    actual_values_array[index] = actual_value
+    predicted_values_array[index] = predicted_value
 
 
 def calculate_mae(predicted_values, actual_values):
@@ -117,21 +113,20 @@ if __name__ == "__main__":
     for i, path in zip(range(len(images)), images):
 
         title = path.split("/")[-1]
-        image = load_image(path)
+        image = load_image_hsv(path=path)
 
-        hsv_image = convert_to_hsv(image)
-        purple_mask = extract_purple(hsv_image)
-        _, image_bin = convert_to_bin(purple_mask)
+        purple_mask = extract_purple(hsv_image=image)
+        _, image_bin = convert_to_bin(image=purple_mask)
 
         kernel = np.ones((3,3), np.uint8) 
 
-        opening, closing, dilation, erosion = get_morphological_features(image_bin, kernel, 6)
-        dist_transform = distance_transform(dilation) 
-        sure_fg, sure_bg, unknown = extract_foreground(dist_transform, erosion, kernel, 3, 0.55)
-        number_of_dittos = watershed(image, sure_fg, unknown)
+        opening, closing, dilation, erosion = get_morphological_features(image=image_bin, kernel=kernel, iter=6)
+        dist_transform = distance_transform(feature=dilation) 
+        sure_fg, sure_bg, unknown = extract_foreground(dist_transform=dist_transform, background_feature=closing, kernel=kernel, iter=3, percentage=0.55)
+        number_of_dittos = watershed(image=image, sure_fg=sure_fg, unknown=unknown)
 
         print_result(title, counts[title], number_of_dittos)
-        save_result(i, actual_values, predicted_values, counts[title], number_of_dittos)
+        save_result(index=i, actual_values_array=actual_values, predicted_values_array=predicted_values, actual_value=counts[title], predicted_value=number_of_dittos)
 
     mae = calculate_mae(predicted_values, actual_values)
     print(mae)
