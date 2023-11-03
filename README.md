@@ -12,11 +12,19 @@ All code for image preprocessing can be found in script [preprocessing.py](https
 
 At the beginning, all images are loaded and for purposes of this script, one of the images is selected as an example.
 
+<<<<<<< Updated upstream
 > To run a full script where all images are processed and mean average error is calculated, please run script [main.py](https://github.com/coma007/ditto-counter/blob/main/main.py) with the following command:  
 > ```shell
 > python3 main.py pictures/
 > ```
 > Output of each picture will be in form _<picture_name>-<actual_value>-<predicted_value>_. Mean avereage error will be shown in the last line of output.
+=======
+> To run a full script where all images are processed and mean absolute error is calculated, please run script 'main.py' with the following command:  
+> ```shell
+> python3 main.py pictures/
+> ```
+> Output of each picture will be in form '*picture_name*-*actual_value*-*predicted_value*'. Mean absolute error will be shown in the last line of output.
+>>>>>>> Stashed changes
 
 
 
